@@ -1,0 +1,6 @@
+{
+  "dimensional_item_cannons.dimstone.cords": "Location: [%d, %d, %d]",
+  "dimensional_item_cannons.dimstone.unset": "Location: [unset]",
+  "dimensional_item_cannons.dimstone.world": "World: %s",
+  "item.dimensional_item_cannons.dimensional_stone": "Dimensional Stone"
+}
