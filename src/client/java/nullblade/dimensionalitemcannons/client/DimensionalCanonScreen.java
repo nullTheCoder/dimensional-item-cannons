@@ -18,8 +18,15 @@ public class DimensionalCanonScreen extends HandledScreen<DimensionalItemCannonS
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-        drawMouseoverTooltip(context, mouseX, mouseY);
         super.drawForeground(context, mouseX, mouseY);
+        int x = (width - backgroundWidth) / 2;
+        int y = (height - backgroundHeight) / 2;
+        drawMouseoverTooltip(context, mouseX - x, mouseY - y);
+    }
+
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
     @Override

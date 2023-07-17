@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [128, 128],
 	"textures": {
-		"0": "dimensional_item_cannons:block/dimensional_item_canon",
-		"particle": "dimensional_item_cannons:block/dimensional_item_canon"
+		"0": "dimensional_item_cannons:block/dimensional_item_cannon",
+		"particle": "dimensional_item_cannons:block/dimensional_item_cannon"
 	},
 	"elements": [
 		{

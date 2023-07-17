@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "dimensional_item_cannons:block/explosion_resistant_stone"
+  }
+}

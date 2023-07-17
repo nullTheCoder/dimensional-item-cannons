@@ -257,7 +257,7 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
 
     @Override
     public Text getDisplayName() {
-        return Text.translatable("dimensional_item_canoncs.dimensional_item_canon_gui");
+        return Text.translatable("block.dimensional_item_cannons.dimensional_item_cannon");
     }
 
     @Nullable

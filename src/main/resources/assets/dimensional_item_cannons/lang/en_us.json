@@ -4,5 +4,14 @@
   "dimensional_item_cannons.dimstone.write": "§bLocation: §7%s §r-> §b%s \n§bshell tier needed: §7%d",
   "dimensional_item_cannons.dimstone.posWrite": "§4Move §7%d meters or less §4of §7%s §4to get the minimum needed shell tier of §7%s",
   "dimensional_item_cannons.dimstone.world": "World: %s",
-  "item.dimensional_item_cannons.dimensional_stone": "Dimensional Stone"
+  "dimensional_item_cannons.tab": "Dimensional Item cannons",
+  "item.dimensional_item_cannons.dimensional_stone": "Dimensional Stone",
+  "block.dimensional_item_cannons.dimensional_item_cannon": "Dimensional Item Cannon",
+  "item.dimensional_item_cannons.dimensional_shell_tier0": "Dimensional Cannon Shell T0",
+  "item.dimensional_item_cannons.dimensional_shell_tier1": "Dimensional Cannon Shell T1",
+  "item.dimensional_item_cannons.dimensional_shell_tier2": "Dimensional Cannon Shell T2",
+  "item.dimensional_item_cannons.dimensional_shell_tier3": "Dimensional Cannon Shell T3",
+  "item.dimensional_item_cannons.dimensional_shell_tier4": "Dimensional Cannon Shell T4",
+  "item.dimensional_item_cannons.dimensional_shell_tier5": "Dimensional Cannon Shell T5",
+  "block.dimensional_item_cannons.explosion_resistant_stone": "Explosion Resistant Stone"
 }
