@@ -160,7 +160,7 @@ public class DimensionalItemCannons implements ModInitializer {
 			try {
 				cfgFile.getParentFile().mkdirs();
 				Files.write(cfgFile.toPath(), """
-				# How many tiers of dimensional shells there should be:
+				# How many tiers of dimensional shells there should be (the mod has recipes upto tier 2 and textures upto tier 5):
 				shell_tiers 3
 				# uncomment the following line to disable this config's reloading when entering a world
 				# or using /reload command. May be useful to do in very large modpacks when you want to decrease load times as much as possible

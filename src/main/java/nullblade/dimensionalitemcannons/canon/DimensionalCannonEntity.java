@@ -2,18 +2,34 @@ package nullblade.dimensionalitemcannons.canon;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 import nullblade.dimensionalitemcannons.DimensionalItemCannons;
 import nullblade.dimensionalitemcannons.Utils;
 import nullblade.dimensionalitemcannons.shell.DimensionalShell;
@@ -113,21 +129,88 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
 
     }
 
-    public void activate() {
+    public static double SLOPE = 0.5;
+
+    public void activate(BlockState state) {
         if (world instanceof ServerWorld serverWorld) {
             if (dimensionStone.isEmpty()) {
                 serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5, 16, 0.5, 0.5, 0.5, 1.0);
                 return;
             }
             var goal = DimensionalStone.getLocation(dimensionStone, world);
-            if (goal == null) {
+            if (goal == null || goal.getLeft() == null || goal.getRight() == null) {
                 serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5, 16, 0.5, 0.5, 0.5, 1.0);
                 return;
             }
-            BlockEntity inventoryEntity = goal.getLeft().getBlockEntity(goal.getRight());
 
-            if (inventoryEntity instanceof Inventory inventory) {
-                Utils.insert(toSend, inventory);
+            double xM = 0;
+            double zM = 0;
+            switch (state.get(Properties.HORIZONTAL_FACING)) {
+                case NORTH -> zM = -1;
+                case SOUTH -> zM = 1;
+                case WEST -> xM = -1;
+                case EAST -> xM = 1;
+            }
+
+            int tierNeeded = Math.max(Math.max(Utils.getTierNeeded(goal.getLeft()), Utils.getTierNeeded(world)), Utils.getTierNeededForCurrentCoordinates(world, goal, pos));
+            int tier = -1;
+            if (fuel.getItem() instanceof DimensionalShell shell) {
+                tier = shell.tier;
+            }
+            if (tier == -1 || toSend.isEmpty()) {
+                serverWorld.spawnParticles(ParticleTypes.CLOUD, pos.getX() + 0.5 + xM, pos.getY() + 1.2, pos.getZ() + 0.5 + zM, 4, 0, 0, 0, 0.05);
+                return;
+            }
+            boolean sendParticles = true;
+            if (tierNeeded > tier) {
+                sendParticles = 0 < serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5, 16, 0.5, 0.5, 0.5, 1.0);
+            } else {
+                BlockEntity inventoryEntity = goal.getLeft().getBlockEntity(goal.getRight());
+
+                if (inventoryEntity instanceof Inventory inventory) {
+                    Utils.insert(toSend, inventory);
+                }
+            }
+
+            var e = world.createExplosion(null, null, null, new Vec3d(pos.getX() + 0.5 + xM, pos.getY() + 1.0, pos.getZ() + 0.5 + zM), 1.5F, false, World.ExplosionSourceType.NONE);
+            e.affectWorld(true);
+
+            fuel.decrement(1);
+
+            if (sendParticles) {
+                if (sendParticles) {
+                    sendParticles = 0 < serverWorld.spawnParticles(ParticleTypes.DRAGON_BREATH, pos.getX() + 0.5 + xM * 10, pos.getY() + 0.75 + SLOPE * 10, pos.getZ() + 0.5 + zM * 10,
+                            20, 0, 0, 0, 0.1);
+                }
+                for (int i = 1 ; i < 10 ; i+=1) {
+                    serverWorld.spawnParticles(ParticleTypes.DRIPPING_WATER, pos.getX() + 0.5 + xM * i, pos.getY() + 0.75 + i * SLOPE, pos.getZ() + 0.5 + zM * i, 1,
+                            0, 0, 0, 0.1);
+                }
+            }
+            if (!toSend.isEmpty()) {
+                world.spawnEntity(new ItemEntity(world,
+                        pos.getX() + 0.5 + xM * 10, pos.getY() + 0.75 + SLOPE * 10, pos.getZ() + 0.5 + zM * 10,
+                        toSend
+                ));
+                if (sendParticles) {
+                    serverWorld.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, pos.getX() + 0.5 + xM * 10, pos.getY() + 0.75 + SLOPE * 10, pos.getZ() + 0.5 + zM * 10,
+                            20, 2.0, 2.0, 2.0, 0.1);
+                }
+                toSend = ItemStack.EMPTY;
+            } else if (goal.getLeft() instanceof ServerWorld wrld) {
+                BlockPos pos = goal.getRight();
+                sendParticles = 0 < wrld.spawnParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        10, 0.5, 0.5, 0.5, 0.1);
+                if (sendParticles) {
+                    wrld.spawnParticles(ParticleTypes.DRAGON_BREATH, pos.getX() + 0.5, pos.getY() + 10.5, pos.getZ() + 0.5,
+                            10, 0.5, 0.5, 0.5, 0.1);
+
+                    for (int i = 1 ; i < 10 ; i+=1) {
+                        wrld.spawnParticles(ParticleTypes.DRIPPING_WATER, pos.getX() + 0.5, pos.getY() + 0.5 + i, pos.getZ() + 0.5,
+                                1, 0.0, 0.0, 0.0, 0.1);
+                    }
+                }
+
             }
 
         }

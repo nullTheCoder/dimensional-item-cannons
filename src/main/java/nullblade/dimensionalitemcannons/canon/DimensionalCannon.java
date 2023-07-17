@@ -48,7 +48,7 @@ public class DimensionalCannon extends HorizontalFacingBlock implements BlockEnt
         if (bl && !bl2) {
             var ent = world.getBlockEntity(pos);
             if (ent instanceof DimensionalCannonEntity) {
-                ((DimensionalCannonEntity) ent).activate();
+                ((DimensionalCannonEntity) ent).activate(state);
             }
             world.setBlockState(pos, state.with(TRIGGERED, true), 4);
         } else if (!bl && bl2) {
@@ -85,9 +85,7 @@ public class DimensionalCannon extends HorizontalFacingBlock implements BlockEnt
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof DimensionalCannonEntity ent) {
-                ItemScatterer.spawn(world, 0, 0, 0, ent.fuel);
-                ItemScatterer.spawn(world, 0, 0, 0, ent.toSend);
-                ItemScatterer.spawn(world, 0, 0, 0, ent.dimensionStone);
+                ItemScatterer.spawn(world, pos, ent);
                 world.updateComparators(pos,this);
             }
             super.onStateReplaced(state, world, pos, newState, moved);
