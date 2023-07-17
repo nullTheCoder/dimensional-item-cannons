@@ -22,8 +22,8 @@ public class DimensionalItemCannonScreenHandler extends ScreenHandler {
         inventory.onOpen(player.player);
 
 
-        this.addSlot(new Slot(inventory, 0, 41, 33));
-        this.addSlot(new Slot(inventory, 1, 99, 33) {
+        this.addSlot(new Slot(inventory, 1, 99, 33));
+        this.addSlot(new Slot(inventory, 0, 41, 33) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return stack.getItem() instanceof DimensionalShell;

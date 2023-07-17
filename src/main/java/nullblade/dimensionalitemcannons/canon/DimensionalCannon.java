@@ -60,6 +60,7 @@ public class DimensionalCannon extends HorizontalFacingBlock implements BlockEnt
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(Properties.HORIZONTAL_FACING);
+        builder.add(Properties.TRIGGERED);
     }
 
     @Override

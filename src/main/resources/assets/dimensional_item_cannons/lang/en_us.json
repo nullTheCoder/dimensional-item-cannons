@@ -1,6 +1,8 @@
 {
   "dimensional_item_cannons.dimstone.cords": "Location: [%d, %d, %d]",
   "dimensional_item_cannons.dimstone.unset": "Location: [unset]",
+  "dimensional_item_cannons.dimstone.write": "§bLocation: §7%s §r-> §b%s \n§bshell tier needed: §7%d",
+  "dimensional_item_cannons.dimstone.posWrite": "§4Move §7%d meters or less §4of §7%s §4to get the minimum needed shell tier of §7%s",
   "dimensional_item_cannons.dimstone.world": "World: %s",
   "item.dimensional_item_cannons.dimensional_stone": "Dimensional Stone"
 }

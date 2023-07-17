@@ -7,11 +7,15 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import nullblade.dimensionalitemcannons.DimensionalItemCannons;
+import nullblade.dimensionalitemcannons.Utils;
 import nullblade.dimensionalitemcannons.shell.DimensionalShell;
 import nullblade.dimensionalitemcannons.shell.DimensionalStone;
 import org.jetbrains.annotations.Nullable;
@@ -110,7 +114,23 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
     }
 
     public void activate() {
+        if (world instanceof ServerWorld serverWorld) {
+            if (dimensionStone.isEmpty()) {
+                serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5, 16, 0.5, 0.5, 0.5, 1.0);
+                return;
+            }
+            var goal = DimensionalStone.getLocation(dimensionStone, world);
+            if (goal == null) {
+                serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5, 16, 0.5, 0.5, 0.5, 1.0);
+                return;
+            }
+            BlockEntity inventoryEntity = goal.getLeft().getBlockEntity(goal.getRight());
 
+            if (inventoryEntity instanceof Inventory inventory) {
+                Utils.insert(toSend, inventory);
+            }
+
+        }
     }
 
     @Override
