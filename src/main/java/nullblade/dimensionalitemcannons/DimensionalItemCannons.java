@@ -24,8 +24,9 @@ import net.minecraft.world.World;
 import nullblade.dimensionalitemcannons.canon.DimensionalCannon;
 import nullblade.dimensionalitemcannons.canon.DimensionalCannonEntity;
 import nullblade.dimensionalitemcannons.canon.DimensionalItemCannonScreenHandler;
-import nullblade.dimensionalitemcannons.shell.DimensionalShell;
-import nullblade.dimensionalitemcannons.shell.DimensionalStone;
+import nullblade.dimensionalitemcannons.items.DimensionalShell;
+import nullblade.dimensionalitemcannons.items.DimensionalStone;
+import nullblade.dimensionalitemcannons.items.GuideItem;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,8 @@ public class DimensionalItemCannons implements ModInitializer {
 		dimensionItemCanon = Registry.register(Registries.BLOCK, new Identifier(id, "dimensional_item_cannon"), new DimensionalCannon());
 		Registry.register(Registries.ITEM, new Identifier(id, "dimensional_item_cannon"), new BlockItem(dimensionItemCanon, new Item.Settings()));
 
+
+
 		dimensionalItemCanonEntity = Registry.register(Registries.BLOCK_ENTITY_TYPE,
 				new Identifier(id, "dimensional_item_canon_entity"),
 				FabricBlockEntityTypeBuilder.create((blockPos, blockState) -> new DimensionalCannonEntity(dimensionalItemCanonEntity, blockPos, blockState), dimensionItemCanon).build());
@@ -75,10 +78,12 @@ public class DimensionalItemCannons implements ModInitializer {
 			itemCanonShell[x] = new DimensionalShell(x);
 		}
 
-		Block explosionResistantStone = Registry.register(Registries.BLOCK, new Identifier(id, "explosion_resistant_stone"), new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).strength(8.0F, 1200.0F)));
+		Block explosionResistantStone = Registry.register(Registries.BLOCK, new Identifier(id, "explosion_resistant_stone"), new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).requiresTool().strength(8.0F, 1200.0F)));
 		Registry.register(Registries.ITEM, new Identifier(id, "explosion_resistant_stone"), new BlockItem(explosionResistantStone, new Item.Settings()));
 
 		dimensionalStone = Registry.register(Registries.ITEM, new Identifier(id, "dimensional_stone"), new DimensionalStone(new Item.Settings().maxCount(1)));
+
+		Item guide = Registry.register(Registries.ITEM, new Identifier(id, "guide"), new GuideItem());
 
 		Registry.register(Registries.ITEM_GROUP, new Identifier(id, "tab"),
 				FabricItemGroup
@@ -92,6 +97,7 @@ public class DimensionalItemCannons implements ModInitializer {
 							for (Item shell : itemCanonShell) {
 								entries.add(shell);
 							}
+							entries.add(guide);
 							entries.add(explosionResistantStone);
 						})
 						.build());

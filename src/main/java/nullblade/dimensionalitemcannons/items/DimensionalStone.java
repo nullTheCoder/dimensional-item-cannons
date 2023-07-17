@@ -1,7 +1,9 @@
-package nullblade.dimensionalitemcannons.shell;
+package nullblade.dimensionalitemcannons.items;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -101,6 +103,8 @@ public class DimensionalStone extends Item {
             return ActionResult.SUCCESS;
         } else if (entity instanceof Inventory) {
             NbtCompound nbt = new NbtCompound();
+            item.addEnchantment(Enchantments.AQUA_AFFINITY, 1);
+            item.addHideFlag(ItemStack.TooltipSection.ENCHANTMENTS);
             nbt.putBoolean("written", true);
             nbt.putInt("x", context.getBlockPos().getX());
             nbt.putInt("y", context.getBlockPos().getY());
@@ -110,6 +114,7 @@ public class DimensionalStone extends Item {
             item.setNbt(nbt);
             return ActionResult.SUCCESS;
         }
+        printRequirements(context.getPlayer(), item, context.getBlockPos());
         return ActionResult.PASS;
     }
 

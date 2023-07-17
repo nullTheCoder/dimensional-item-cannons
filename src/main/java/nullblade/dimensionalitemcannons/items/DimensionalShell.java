@@ -1,4 +1,4 @@
-package nullblade.dimensionalitemcannons.shell;
+package nullblade.dimensionalitemcannons.items;
 
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;

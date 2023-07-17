@@ -9,8 +9,8 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import nullblade.dimensionalitemcannons.DimensionalItemCannons;
-import nullblade.dimensionalitemcannons.shell.DimensionalShell;
-import nullblade.dimensionalitemcannons.shell.DimensionalStone;
+import nullblade.dimensionalitemcannons.items.DimensionalShell;
+import nullblade.dimensionalitemcannons.items.DimensionalStone;
 import org.jetbrains.annotations.Nullable;
 
 public class DimensionalItemCannonScreenHandler extends ScreenHandler {
@@ -22,20 +22,22 @@ public class DimensionalItemCannonScreenHandler extends ScreenHandler {
         inventory.onOpen(player.player);
 
 
-        this.addSlot(new Slot(inventory, 1, 99, 33));
-        this.addSlot(new Slot(inventory, 0, 41, 33) {
+
+        this.addSlot(new Slot(inventory, DimensionalCannonEntity.STONE, 152, 61) {
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.getItem() instanceof DimensionalStone;
+            }
+        });
+
+        this.addSlot(new Slot(inventory, DimensionalCannonEntity.FUEL, 41, 33) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return stack.getItem() instanceof DimensionalShell;
             }
         });
 
-        this.addSlot(new Slot(inventory, 2, 152, 61) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof DimensionalStone;
-            }
-        });
+        this.addSlot(new Slot(inventory, DimensionalCannonEntity.SEND, 99, 33));
 
 
         int m;

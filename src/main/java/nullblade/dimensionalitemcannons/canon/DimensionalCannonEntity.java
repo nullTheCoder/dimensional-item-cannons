@@ -2,38 +2,27 @@ package nullblade.dimensionalitemcannons.canon;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.explosion.ExplosionBehavior;
 import nullblade.dimensionalitemcannons.DimensionalItemCannons;
 import nullblade.dimensionalitemcannons.Utils;
-import nullblade.dimensionalitemcannons.shell.DimensionalShell;
-import nullblade.dimensionalitemcannons.shell.DimensionalStone;
+import nullblade.dimensionalitemcannons.items.DimensionalShell;
+import nullblade.dimensionalitemcannons.items.DimensionalStone;
 import org.jetbrains.annotations.Nullable;
 
 public class DimensionalCannonEntity extends BlockEntity implements Inventory, NamedScreenHandlerFactory {
@@ -42,6 +31,10 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
     public ItemStack fuel = ItemStack.EMPTY;
 
     public ItemStack dimensionStone = ItemStack.EMPTY;
+    
+    public static final int FUEL = 0;
+    public static final int STONE = 1;
+    public static final int SEND = 2;
 
     public DimensionalCannonEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -55,11 +48,11 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        if (slot == 0) {
+        if (slot == FUEL) {
             return stack.getItem() instanceof DimensionalShell;
-        } else if (slot == 2) {
+        } else if (slot == STONE) {
             return stack.getItem() instanceof DimensionalStone;
-        } else return slot == 1;
+        } else return slot == SEND;
     }
 
     @Override
@@ -69,9 +62,9 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
 
     @Override
     public ItemStack getStack(int slot) {
-        if (slot == 1) {
+        if (slot == SEND) {
             return toSend;
-        } else if (slot == 2) {
+        } else if (slot == STONE) {
             return dimensionStone;
         }else {
             return fuel;
@@ -80,10 +73,12 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
+        if (world != null)
+            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon);
         this.markDirty();
-        if (slot == 1) {
+        if (slot == SEND) {
             return !toSend.isEmpty() && amount > 0 ? toSend.split(amount) : ItemStack.EMPTY;
-        } else if (slot == 2) {
+        } else if (slot == STONE) {
             return !dimensionStone.isEmpty() && amount > 0 ? dimensionStone.split(amount) : ItemStack.EMPTY;
         } else {
             return !fuel.isEmpty() && amount > 0 ? fuel.split(amount) : ItemStack.EMPTY;
@@ -92,11 +87,13 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
 
     @Override
     public ItemStack removeStack(int slot) {
+        if (world != null)
+            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon);
         ItemStack ret;
-        if (slot == 1) {
+        if (slot == SEND) {
             ret = toSend;
             toSend = ItemStack.EMPTY;
-        } else if (slot == 2) {
+        } else if (slot == STONE) {
             ret = dimensionStone;
             dimensionStone = ItemStack.EMPTY;
         } else {
@@ -109,9 +106,11 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
 
     @Override
     public void setStack(int slot, ItemStack stack) {
-        if (slot == 1) {
+        if (world != null)
+            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon);
+        if (slot == SEND) {
             toSend = stack;
-        } else if (slot == 2) {
+        } else if (slot == STONE) {
             dimensionStone = stack;
         } else {
             fuel = stack;
@@ -161,6 +160,9 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
                 serverWorld.spawnParticles(ParticleTypes.CLOUD, pos.getX() + 0.5 + xM, pos.getY() + 1.2, pos.getZ() + 0.5 + zM, 4, 0, 0, 0, 0.05);
                 return;
             }
+            markDirty();
+            world.updateComparators(pos, state.getBlock());
+
             boolean sendParticles = true;
             if (tierNeeded > tier) {
                 sendParticles = 0 < serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5, 16, 0.5, 0.5, 0.5, 1.0);

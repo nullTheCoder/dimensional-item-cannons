@@ -6,6 +6,7 @@
   "dimensional_item_cannons.dimstone.world": "World: %s",
   "dimensional_item_cannons.tab": "Dimensional Item cannons",
   "item.dimensional_item_cannons.dimensional_stone": "Dimensional Stone",
+  "item.dimensional_item_cannons.guide": "Dimensional Item Cannon Guide",
   "block.dimensional_item_cannons.dimensional_item_cannon": "Dimensional Item Cannon",
   "item.dimensional_item_cannons.dimensional_shell_tier0": "Dimensional Cannon Shell T0",
   "item.dimensional_item_cannons.dimensional_shell_tier1": "Dimensional Cannon Shell T1",
@@ -13,5 +14,6 @@
   "item.dimensional_item_cannons.dimensional_shell_tier3": "Dimensional Cannon Shell T3",
   "item.dimensional_item_cannons.dimensional_shell_tier4": "Dimensional Cannon Shell T4",
   "item.dimensional_item_cannons.dimensional_shell_tier5": "Dimensional Cannon Shell T5",
-  "block.dimensional_item_cannons.explosion_resistant_stone": "Explosion Resistant Stone"
+  "block.dimensional_item_cannons.explosion_resistant_stone": "Explosion Resistant Stone",
+  "dimensional_item_cannons.how_to_use": "How to use your Dimensional Item Cannon:\n 1. Bind a Dimensional Stone to a chest: Sneak and right-click on the chest with a Dimensional Stone.\n 2. Find suitable position: Locate a spot in another dimension which is 3 dimensionally close to your target chest. Right-click a block with the Dimensional Stone to see how far away you are from a required position.\n 3. Place your Dimensional Item Cannon\n 4. Insert the Dimensional Stone: Place the bound Dimensional Stone into the cannon.\n 5. Load Dimensional Shells into the Cannon: Check your bound Dimensional Stone to find out which shell tier you need.\n 6. Place the item(s) you want to send into the cannon. \n 7. Activate the cannon: Power the cannon using redstone.\n 8. Enjoy!"
 }

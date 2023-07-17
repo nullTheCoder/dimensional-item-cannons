@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "dimensional_item_cannons:dimensional_item_cannon",
+    "dimensional_item_cannons:explosion_resistant_stone"
+  ]
+}

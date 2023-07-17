@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "dimensional_item_cannons",
+  "key": {
+    "#": {
+      "item": "minecraft:gold_ingot"
+    },
+    ".": {
+      "item": "dimensional_item_cannons:explosion_resistant_stone"
+    },
+    "*" : {
+      "item": "minecraft:lapis_lazuli"
+    }
+  },
+  "pattern": [
+    "*#*",
+    "#.#",
+    "*#*"
+  ],
+  "result": {
+    "item": "dimensional_item_cannons:dimensional_shell_tier1",
+    "count": 1
+  },
+  "show_notification": true
+}

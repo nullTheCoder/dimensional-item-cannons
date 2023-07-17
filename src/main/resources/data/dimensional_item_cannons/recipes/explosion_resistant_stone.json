@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "dimensional_item_cannons",
+  "key": {
+    "#": {
+      "item": "minecraft:stone"
+    },
+    ".": {
+      "item": "minecraft:obsidian"
+    },
+    "*" : {
+      "item": "minecraft:clay"
+    }
+  },
+  "pattern": [
+    "*#*",
+    "#.#",
+    "*#*"
+  ],
+  "result": {
+    "item": "dimensional_item_cannons:explosion_resistant_stone",
+    "count": 8
+  },
+  "show_notification": true
+}

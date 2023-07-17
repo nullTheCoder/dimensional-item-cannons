@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "dimensional_item_cannons",
+  "key": {
+    "#": {
+      "item": "minecraft:ender_eye"
+    },
+    ".": {
+      "item": "minecraft:redstone_block"
+    },
+    "*" : {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "*#*",
+    "#.#",
+    "*#*"
+  ],
+  "result": {
+    "item": "dimensional_item_cannons:dimensional_stone",
+    "count": 1
+  },
+  "show_notification": true
+}

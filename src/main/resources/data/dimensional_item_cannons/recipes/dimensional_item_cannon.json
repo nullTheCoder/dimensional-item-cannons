@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "dimensional_item_cannons",
+  "key": {
+    "#": {
+      "item": "dimensional_item_cannons:explosion_resistant_stone"
+    },
+    "@": {
+      "item": "minecraft:redstone_block"
+    },
+    "*" : {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "pattern": [
+    "###",
+    "@**"
+  ],
+  "result": {
+    "item": "dimensional_item_cannons:dimensional_item_cannon",
+    "count": 1
+  },
+  "show_notification": true
+}
