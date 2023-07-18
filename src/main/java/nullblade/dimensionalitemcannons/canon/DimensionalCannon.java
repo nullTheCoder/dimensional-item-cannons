@@ -45,7 +45,7 @@ public class DimensionalCannon extends HorizontalFacingBlock implements BlockEnt
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof DimensionalCannonEntity dce) {
-            return dce.toSend.isEmpty() ? 0 : dce.toSend.getCount() / dce.toSend.getMaxCount();
+            return dce.toSend.isEmpty() ? 0 : 16 * (dce.toSend.getCount() / dce.toSend.getMaxCount());
         }
         return 0;
     }
