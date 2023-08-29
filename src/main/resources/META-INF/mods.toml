@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[46,)"
+
+license="GPL-3.0"
+issueTrackerURL="https://github.com/nullTheCoder/dimensional-item-cannons/issues"
+showAsResourcePack=false
+
+[[mods]]
+modId="dimensional_item_cannons"
+version="${version}"
+displayName="Dimensional Item Cannons"
+logoFile="assets/dimensional_item_cannons/icon.png"
+authors="nullBlade"
+credits="talstoj"
+description="When moving items in 3 dimensions isn't enough."
+displayTest="MATCH_VERSION"
+displayURL="https://modrinth.com/mod/dimensional-item-cannons"
+
+[[dependencies.dimensional_item_cannons]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.dimensional_item_cannons]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1]"
+ordering="NONE"
+side="BOTH"

@@ -1,18 +1,13 @@
 package nullblade.dimensionalitemcannons;
 
-import net.fabricmc.api.ModInitializer;
-
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -21,9 +16,19 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import nullblade.dimensionalitemcannons.canon.DimensionalCannon;
 import nullblade.dimensionalitemcannons.canon.DimensionalCannonEntity;
 import nullblade.dimensionalitemcannons.canon.DimensionalItemCannonScreenHandler;
+import nullblade.dimensionalitemcannons.client.DimensionalItemCannonsClient;
 import nullblade.dimensionalitemcannons.items.DimensionalShell;
 import nullblade.dimensionalitemcannons.items.DimensionalStone;
 import nullblade.dimensionalitemcannons.items.GuideItem;
@@ -37,79 +42,93 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 
-public class DimensionalItemCannons implements ModInitializer {
+@Mod(DimensionalItemCannons.id)
+public class DimensionalItemCannons {
     public static final Logger LOGGER = LoggerFactory.getLogger("dimensional-item-cannons");
 
-	public static Item[] itemCanonShell;
+	public static RegistryObject<Item>[] itemCanonShell;
 
-	public static Block dimensionItemCanon;
+	public static RegistryObject<Block> dimensionItemCanon;
 
-	public static BlockEntityType<DimensionalCannonEntity> dimensionalItemCanonEntity;
+	public static RegistryObject<BlockEntityType<DimensionalCannonEntity>> dimensionalItemCanonEntity;
 
 	public static final String id = "dimensional_item_cannons";
-	public static ScreenHandlerType<DimensionalItemCannonScreenHandler> screenHandler;
+	public static RegistryObject<ScreenHandlerType<DimensionalItemCannonScreenHandler>> screenHandler;
 
-	public static Item dimensionalStone;
+	public static RegistryObject<Item> dimensionalStone;
 
 	public static int amountOfShells = 5;
 
 	public static int max3DDistance = 25;
 	public static int max3DDistancePerShellTier = 10;
 
-	@Override
-	public void onInitialize() {
+	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, id);
+	private static final DeferredRegister<ScreenHandlerType<?>> SCREEN_HANDLER = DeferredRegister.create(ForgeRegistries.MENU_TYPES, id);
+	private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, id);
+	private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, id);
+	private static final DeferredRegister<ItemGroup> ITEM_GROUP = DeferredRegister.create(Registries.ITEM_GROUP.getKey(), id);
+
+	public DimensionalItemCannons() {
 		LOGGER.info("Hello, World!");
 		loadConfigs(null);
 
+		screenHandler = SCREEN_HANDLER.register("dimensional_item_cannon", () -> new ScreenHandlerType<>(DimensionalItemCannonScreenHandler::new, FeatureSet.empty()));
 
-		screenHandler = Registry.register(Registries.SCREEN_HANDLER, new Identifier(id, "dimensional_item_cannon"), new ScreenHandlerType<>(DimensionalItemCannonScreenHandler::new, FeatureSet.empty()));
+		dimensionItemCanon = BLOCKS.register("dimensional_item_cannon", DimensionalCannon::new);
+		ITEMS.register("dimensional_item_cannon", () -> new BlockItem(dimensionItemCanon.get(), new Item.Settings()));
 
-		dimensionItemCanon = Registry.register(Registries.BLOCK, new Identifier(id, "dimensional_item_cannon"), new DimensionalCannon());
-		Registry.register(Registries.ITEM, new Identifier(id, "dimensional_item_cannon"), new BlockItem(dimensionItemCanon, new Item.Settings()));
+		dimensionalItemCanonEntity = BLOCK_ENTITY_TYPES.register("dimensional_item_canon_entity",
+				() -> BlockEntityType.Builder.create((blockPos, blockState) -> 
+						new DimensionalCannonEntity(dimensionalItemCanonEntity.get(), blockPos, blockState), dimensionItemCanon.get()).build(null));
 
-
-
-		dimensionalItemCanonEntity = Registry.register(Registries.BLOCK_ENTITY_TYPE,
-				new Identifier(id, "dimensional_item_canon_entity"),
-				FabricBlockEntityTypeBuilder.create((blockPos, blockState) -> new DimensionalCannonEntity(dimensionalItemCanonEntity, blockPos, blockState), dimensionItemCanon).build());
-
-		itemCanonShell = new Item[amountOfShells];
+		itemCanonShell = new RegistryObject[amountOfShells];
 		for (int x = 0 ; x < amountOfShells ; x++) {
-			itemCanonShell[x] = new DimensionalShell(x);
+			int finalX = x;
+			itemCanonShell[x] = ITEMS.register("dimensional_shell_tier" + x, () -> new DimensionalShell(finalX));
 		}
 
-		Block explosionResistantStone = Registry.register(Registries.BLOCK, new Identifier(id, "explosion_resistant_stone"), new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).requiresTool().strength(8.0F, 1200.0F)));
-		Registry.register(Registries.ITEM, new Identifier(id, "explosion_resistant_stone"), new BlockItem(explosionResistantStone, new Item.Settings()));
+		RegistryObject<Block> explosionResistantStone = BLOCKS.register("explosion_resistant_stone", () -> new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).requiresTool().strength(8.0F, 1200.0F)));
+		ITEMS.register("explosion_resistant_stone", () -> new BlockItem(explosionResistantStone.get(), new Item.Settings()));
 
-		dimensionalStone = Registry.register(Registries.ITEM, new Identifier(id, "dimensional_stone"), new DimensionalStone(new Item.Settings().maxCount(1)));
+		dimensionalStone = ITEMS.register("dimensional_stone", () -> new DimensionalStone(new Item.Settings().maxCount(1)));
 
-		Item guide = Registry.register(Registries.ITEM, new Identifier(id, "guide"), new GuideItem());
+		RegistryObject<Item> guide = ITEMS.register("guide", GuideItem::new);
 
-		Registry.register(Registries.ITEM_GROUP, new Identifier(id, "tab"),
-				FabricItemGroup
+		ITEM_GROUP.register("dimensional_item_cannons_tab", () ->
+				ItemGroup
 						.builder()
 						.displayName(Text.translatable(id + ".tab"))
-						.icon(() -> dimensionItemCanon.asItem().getDefaultStack())
+						.icon(() -> dimensionItemCanon.get().asItem().getDefaultStack())
 						.noScrollbar()
 						.entries((displayContext, entries) -> {
-							entries.add(dimensionItemCanon);
-							entries.add(dimensionalStone);
-							for (Item shell : itemCanonShell) {
-								entries.add(shell);
+							entries.add(dimensionItemCanon.get());
+							entries.add(dimensionalStone.get());
+							for (RegistryObject<Item> shell : itemCanonShell) {
+								entries.add(shell.get());
 							}
-							entries.add(guide);
-							entries.add(explosionResistantStone);
+							entries.add(guide.get());
+							entries.add(explosionResistantStone.get());
 						})
 						.build());
+		
+		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-		ServerLifecycleEvents.SERVER_STARTED.register((this::loadConfigs));
-
-		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> loadConfigs(server));
-
-
+		bus.register(this);
+		bus.addListener(DimensionalItemCannonsClient::onInitializeClient);
+		
+		SCREEN_HANDLER.register(bus);
+		BLOCKS.register(bus);
+		BLOCK_ENTITY_TYPES.register(bus);
+		ITEMS.register(bus);
+		ITEM_GROUP.register(bus);
 	}
 
 	private boolean noReload = false;
+	
+	@SubscribeEvent
+	public void commonSetup(FMLCommonSetupEvent e) {
+		loadConfigs(ServerLifecycleHooks.getCurrentServer());
+	}
 
 	private void loadConfigs(@Nullable MinecraftServer server) {
 		if (noReload)

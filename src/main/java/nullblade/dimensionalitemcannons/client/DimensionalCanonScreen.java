@@ -9,7 +9,6 @@ import nullblade.dimensionalitemcannons.DimensionalItemCannons;
 import nullblade.dimensionalitemcannons.canon.DimensionalItemCannonScreenHandler;
 
 public class DimensionalCanonScreen extends HandledScreen<DimensionalItemCannonScreenHandler> {
-
     private static final Identifier TEXTURE = new Identifier(DimensionalItemCannons.id, "textures/gui/canon.png");
 
     public DimensionalCanonScreen(DimensionalItemCannonScreenHandler handler, PlayerInventory inventory, Text title) {

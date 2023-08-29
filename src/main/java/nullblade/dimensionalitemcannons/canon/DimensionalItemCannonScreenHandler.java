@@ -14,8 +14,8 @@ import nullblade.dimensionalitemcannons.items.DimensionalStone;
 import org.jetbrains.annotations.Nullable;
 
 public class DimensionalItemCannonScreenHandler extends ScreenHandler {
-
     public Inventory inventory;
+
     protected DimensionalItemCannonScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory player, Inventory entity) {
         super(type, syncId);
         inventory = entity;
@@ -56,16 +56,15 @@ public class DimensionalItemCannonScreenHandler extends ScreenHandler {
     }
 
     public DimensionalItemCannonScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(DimensionalItemCannons.screenHandler, syncId, playerInventory, new SimpleInventory(3));
+        this(DimensionalItemCannons.screenHandler.get(), syncId, playerInventory, new SimpleInventory(3));
     }
 
     @Override
     public ItemStack quickMove(PlayerEntity player, int invSlot) {
-        ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(invSlot);
         if (slot != null && slot.hasStack()) {
             ItemStack originalStack = slot.getStack();
-            newStack = originalStack.copy();
+
             if (invSlot < this.inventory.size()) {
                 if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
                     return ItemStack.EMPTY;

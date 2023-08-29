@@ -6,7 +6,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -16,17 +15,16 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import nullblade.dimensionalitemcannons.DimensionalItemCannons;
 import nullblade.dimensionalitemcannons.Utils;
 import nullblade.dimensionalitemcannons.items.DimensionalShell;
 import nullblade.dimensionalitemcannons.items.DimensionalStone;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 public class DimensionalCannonEntity extends BlockEntity implements Inventory, NamedScreenHandlerFactory {
-
     public ItemStack toSend = ItemStack.EMPTY;
     public ItemStack fuel = ItemStack.EMPTY;
 
@@ -74,7 +72,7 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
     @Override
     public ItemStack removeStack(int slot, int amount) {
         if (world != null)
-            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon);
+            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon.get());
         this.markDirty();
         if (slot == SEND) {
             return !toSend.isEmpty() && amount > 0 ? toSend.split(amount) : ItemStack.EMPTY;
@@ -88,7 +86,7 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
     @Override
     public ItemStack removeStack(int slot) {
         if (world != null)
-            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon);
+            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon.get());
         ItemStack ret;
         if (slot == SEND) {
             ret = toSend;
@@ -107,7 +105,7 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
     @Override
     public void setStack(int slot, ItemStack stack) {
         if (world != null)
-            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon);
+            world.updateComparators(pos, DimensionalItemCannons.dimensionItemCanon.get());
         if (slot == SEND) {
             toSend = stack;
         } else if (slot == STONE) {
@@ -265,6 +263,6 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new DimensionalItemCannonScreenHandler(DimensionalItemCannons.screenHandler, syncId, player.getInventory(), this);
+        return new DimensionalItemCannonScreenHandler(DimensionalItemCannons.screenHandler.get(), syncId, player.getInventory(), this);
     }
 }

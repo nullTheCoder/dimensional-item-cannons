@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class DimensionalStone extends Item {
-
     public DimensionalStone(Settings settings) {
         super(settings);
     }
@@ -117,5 +116,4 @@ public class DimensionalStone extends Item {
         printRequirements(context.getPlayer(), item, context.getBlockPos());
         return ActionResult.PASS;
     }
-
 }

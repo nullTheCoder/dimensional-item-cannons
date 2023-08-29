@@ -1,6 +1,5 @@
 package nullblade.dimensionalitemcannons;
 
-import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -8,13 +7,11 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Vector3d;
-import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Utils {
-
     public static Map<Identifier, Integer> tierNeeded = new HashMap<>();
 
     public static int getTierNeeded(World world) {
@@ -53,6 +50,7 @@ public class Utils {
 
         return new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
     }
+    
     public static void insert(ItemStack stack, Inventory inventory) {
         for (int slot = 0 ; slot < inventory.size() ; slot++) {
             if (!inventory.isValid(slot, stack)) {
@@ -72,7 +70,5 @@ public class Utils {
                 return;
             }
         }
-
     }
-
 }
