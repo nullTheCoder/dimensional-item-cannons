@@ -1,6 +1,9 @@
 package nullblade.dimensionalitemcannons.canon;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -166,10 +169,10 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
                 sendParticles = 0 < serverWorld.spawnParticles(ParticleTypes.ANGRY_VILLAGER, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5, 16, 0.5, 0.5, 0.5, 1.0);
             } else {
                 BlockEntity inventoryEntity = goal.getLeft().getBlockEntity(goal.getRight());
+                Inventory inv = getInventory(goal.getLeft(), inventoryEntity);
 
-                if (inventoryEntity instanceof Inventory inventory) {
-                    Utils.insert(toSend, inventory);
-                }
+                if (inv != null) 
+                    Utils.insert(toSend, inv);
             }
 
             var e = world.createExplosion(null, null, null, new Vec3d(pos.getX() + 0.5 + xM, pos.getY() + 1.0, pos.getZ() + 0.5 + zM), 1.5F, false, World.ExplosionSourceType.NONE);
@@ -178,13 +181,12 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
             fuel.decrement(1);
 
             if (sendParticles) {
-                if (sendParticles) {
-                    sendParticles = 0 < serverWorld.spawnParticles(ParticleTypes.DRAGON_BREATH, pos.getX() + 0.5 + xM * 10, pos.getY() + 0.75 + SLOPE * 10, pos.getZ() + 0.5 + zM * 10,
-                            20, 0, 0, 0, 0.1);
-                }
+                sendParticles = 0 < serverWorld.spawnParticles(ParticleTypes.DRAGON_BREATH, pos.getX() + 0.5 + xM * 10, 
+                        pos.getY() + 0.75 + SLOPE * 10, pos.getZ() + 0.5 + zM * 10, 20, 0, 0, 0, 0.1);
+                
                 for (int i = 1 ; i < 10 ; i+=1) {
-                    serverWorld.spawnParticles(ParticleTypes.DRIPPING_WATER, pos.getX() + 0.5 + xM * i, pos.getY() + 0.75 + i * SLOPE, pos.getZ() + 0.5 + zM * i, 1,
-                            0, 0, 0, 0.1);
+                    serverWorld.spawnParticles(ParticleTypes.DRIPPING_WATER, pos.getX() + 0.5 + xM * i, 
+                            pos.getY() + 0.75 + i * SLOPE, pos.getZ() + 0.5 + zM * i, 1, 0, 0, 0, 0.1);
                 }
             }
             if (!toSend.isEmpty()) {
@@ -214,6 +216,19 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
             }
 
         }
+    }
+
+    private static Inventory getInventory(World world, BlockEntity entity) {
+        Block block = entity.getCachedState().getBlock();
+        
+        if (entity instanceof Inventory inv) {
+            if (inv instanceof ChestBlockEntity && block instanceof ChestBlock)
+                return ChestBlock.getInventory((ChestBlock)block, entity.getCachedState(), world, entity.getPos(), true);
+            else 
+                return inv;
+        } 
+
+        return null;
     }
 
     @Override
