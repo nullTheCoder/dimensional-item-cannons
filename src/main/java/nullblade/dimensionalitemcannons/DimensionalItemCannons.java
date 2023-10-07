@@ -170,7 +170,7 @@ public class DimensionalItemCannons {
 				if (server != null) {
 					for (World world : server.getWorlds()) {
 						if (!Utils.tierNeeded.containsKey(world.getDimensionKey().getValue())) {
-							toWrite.append("\ndimension").append(world.getDimensionKey().getValue()).append(" 2");
+							toWrite.append("\ndimension ").append(world.getDimensionKey().getValue()).append(" 2");
 						}
 					}
 					if (!toWrite.isEmpty()) {
