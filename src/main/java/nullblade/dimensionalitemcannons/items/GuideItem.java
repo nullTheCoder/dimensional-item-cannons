@@ -8,9 +8,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import static nullblade.dimensionalitemcannons.DimensionalItemCannons.tab;
+
 public class GuideItem extends Item {
     public GuideItem() {
-        super(new Settings().maxCount(1));
+        super(new Settings().maxCount(1).group(tab));
     }
 
     @Override

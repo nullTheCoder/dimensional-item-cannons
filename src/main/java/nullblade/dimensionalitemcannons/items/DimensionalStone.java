@@ -2,7 +2,6 @@ package nullblade.dimensionalitemcannons.items;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -10,13 +9,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import nullblade.dimensionalitemcannons.DimensionalItemCannons;
 import nullblade.dimensionalitemcannons.Utils;
@@ -44,7 +43,7 @@ public class DimensionalStone extends Item {
             if (world.getServer() == null) {
                 return null;
             }
-            World worldTo = world.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, new Identifier(worldId)));
+            World worldTo = world.getServer().getWorld(RegistryKey.of(Registry.WORLD_KEY, new Identifier(worldId)));
 
             return new Pair<>(worldTo, new BlockPos(x, y, z));
         }

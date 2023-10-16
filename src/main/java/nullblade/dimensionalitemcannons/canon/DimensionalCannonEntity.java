@@ -20,6 +20,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import nullblade.dimensionalitemcannons.DimensionalItemCannons;
 import nullblade.dimensionalitemcannons.Utils;
 import nullblade.dimensionalitemcannons.items.DimensionalShell;
@@ -175,7 +176,7 @@ public class DimensionalCannonEntity extends BlockEntity implements Inventory, N
                     Utils.insert(toSend, inv);
             }
 
-            var e = world.createExplosion(null, null, null, new Vec3d(pos.getX() + 0.5 + xM, pos.getY() + 1.0, pos.getZ() + 0.5 + zM), 1.5F, false, World.ExplosionSourceType.NONE);
+            var e = world.createExplosion(null, pos.getX() + 0.5 + xM, pos.getY() + 1.0, pos.getZ() + 0.5 + zM, 1.5F, false, Explosion.DestructionType.NONE);
             e.affectWorld(true);
 
             fuel.decrement(1);

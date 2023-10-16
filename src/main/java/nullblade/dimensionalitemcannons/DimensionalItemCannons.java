@@ -1,9 +1,8 @@
 package nullblade.dimensionalitemcannons;
 
 import net.fabricmc.api.ModInitializer;
-
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -11,15 +10,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import nullblade.dimensionalitemcannons.canon.DimensionalCannon;
 import nullblade.dimensionalitemcannons.canon.DimensionalCannonEntity;
@@ -56,20 +52,25 @@ public class DimensionalItemCannons implements ModInitializer {
 	public static int max3DDistance = 25;
 	public static int max3DDistancePerShellTier = 10;
 
+	public static ItemGroup tab;
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Hello, World!");
 		loadConfigs(null);
 
-
-		screenHandler = Registry.register(Registries.SCREEN_HANDLER, new Identifier(id, "dimensional_item_cannon"), new ScreenHandlerType<>(DimensionalItemCannonScreenHandler::new, FeatureSet.empty()));
-
-		dimensionItemCanon = Registry.register(Registries.BLOCK, new Identifier(id, "dimensional_item_cannon"), new DimensionalCannon());
-		Registry.register(Registries.ITEM, new Identifier(id, "dimensional_item_cannon"), new BlockItem(dimensionItemCanon, new Item.Settings()));
+		tab = FabricItemGroupBuilder
+				.build(new Identifier(id, "tab"), () -> dimensionItemCanon.asItem().getDefaultStack());
 
 
+		screenHandler = Registry.register(Registry.SCREEN_HANDLER, new Identifier(id, "dimensional_item_cannon"), new ScreenHandlerType<>(DimensionalItemCannonScreenHandler::new));
 
-		dimensionalItemCanonEntity = Registry.register(Registries.BLOCK_ENTITY_TYPE,
+		dimensionItemCanon = Registry.register(Registry.BLOCK, new Identifier(id, "dimensional_item_cannon"), new DimensionalCannon());
+		Registry.register(Registry.ITEM, new Identifier(id, "dimensional_item_cannon"), new BlockItem(dimensionItemCanon, new Item.Settings().group(tab)));
+
+
+
+		dimensionalItemCanonEntity = Registry.register(Registry.BLOCK_ENTITY_TYPE,
 				new Identifier(id, "dimensional_item_canon_entity"),
 				FabricBlockEntityTypeBuilder.create((blockPos, blockState) -> new DimensionalCannonEntity(dimensionalItemCanonEntity, blockPos, blockState), dimensionItemCanon).build());
 
@@ -78,29 +79,12 @@ public class DimensionalItemCannons implements ModInitializer {
 			itemCanonShell[x] = new DimensionalShell(x);
 		}
 
-		Block explosionResistantStone = Registry.register(Registries.BLOCK, new Identifier(id, "explosion_resistant_stone"), new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).requiresTool().strength(8.0F, 1200.0F)));
-		Registry.register(Registries.ITEM, new Identifier(id, "explosion_resistant_stone"), new BlockItem(explosionResistantStone, new Item.Settings()));
+		Block explosionResistantStone = Registry.register(Registry.BLOCK, new Identifier(id, "explosion_resistant_stone"), new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN).requiresTool().strength(8.0F, 1200.0F)));
+		Registry.register(Registry.ITEM, new Identifier(id, "explosion_resistant_stone"), new BlockItem(explosionResistantStone, new Item.Settings().group(tab)));
 
-		dimensionalStone = Registry.register(Registries.ITEM, new Identifier(id, "dimensional_stone"), new DimensionalStone(new Item.Settings().maxCount(1)));
+		dimensionalStone = Registry.register(Registry.ITEM, new Identifier(id, "dimensional_stone"), new DimensionalStone(new Item.Settings().maxCount(1).group(tab)));
 
-		Item guide = Registry.register(Registries.ITEM, new Identifier(id, "guide"), new GuideItem());
-
-		Registry.register(Registries.ITEM_GROUP, new Identifier(id, "tab"),
-				FabricItemGroup
-						.builder()
-						.displayName(Text.translatable(id + ".tab"))
-						.icon(() -> dimensionItemCanon.asItem().getDefaultStack())
-						.noScrollbar()
-						.entries((displayContext, entries) -> {
-							entries.add(dimensionItemCanon);
-							entries.add(dimensionalStone);
-							for (Item shell : itemCanonShell) {
-								entries.add(shell);
-							}
-							entries.add(guide);
-							entries.add(explosionResistantStone);
-						})
-						.build());
+		Item guide = Registry.register(Registry.ITEM, new Identifier(id, "guide"), new GuideItem());
 
 		ServerLifecycleEvents.SERVER_STARTED.register((this::loadConfigs));
 
@@ -131,7 +115,7 @@ public class DimensionalItemCannons implements ModInitializer {
 							case "dimension" -> {
 								Utils.tierNeeded.put(new Identifier(params[1]), Integer.parseInt(params[2]));
 								if (server != null) {
-									if (server.getWorld(RegistryKey.of(RegistryKeys.WORLD, new Identifier(params[1]))) == null) {
+									if (server.getWorld(RegistryKey.of(Registry.WORLD_KEY, new Identifier(params[1]))) == null) {
 										LOGGER.warn("Unknown world in line " + lineNum + " in mod's config");
 									}
 								}

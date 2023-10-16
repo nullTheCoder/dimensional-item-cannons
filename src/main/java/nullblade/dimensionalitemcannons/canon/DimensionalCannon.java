@@ -50,10 +50,6 @@ public class DimensionalCannon extends HorizontalFacingBlock implements BlockEnt
         return 0;
     }
 
-    @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-        return true;
-    }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext ctx) {
@@ -83,7 +79,7 @@ public class DimensionalCannon extends HorizontalFacingBlock implements BlockEnt
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getPlacementState(ctx).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return super.getPlacementState(ctx).with(Properties.HORIZONTAL_FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     protected void openScreen(World world, BlockPos pos, PlayerEntity player) {

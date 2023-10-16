@@ -6,9 +6,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,11 +45,11 @@ public class Utils {
             return null;
         }
 
-        Vector3d pos = new Vector3d(goal.getRight().getX(), goal.getRight().getY(), goal.getRight().getZ());
+        Vec3d pos = new Vec3d(goal.getRight().getX(), goal.getRight().getY(), goal.getRight().getZ());
 
-        pos.div(world.getDimension().coordinateScale());
-        pos.mul(goal.getLeft().getDimension().coordinateScale());
-        pos.y = goal.getRight().getY();
+        pos = pos.multiply(1f/world.getDimension().coordinateScale());
+        pos = pos.multiply(goal.getLeft().getDimension().coordinateScale());
+        pos = pos.withAxis(Direction.Axis.Y, goal.getRight().getY());
 
         return new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
     }
@@ -60,7 +60,8 @@ public class Utils {
             }
             ItemStack there = inventory.getStack(slot);
             if (there.isEmpty()) {
-                inventory.setStack(slot, stack.copyAndEmpty());
+                inventory.setStack(slot, stack.copy());
+                stack.setCount(0);
                 return;
             }
             if (ItemStack.canCombine(there, stack)) {
